@@ -1,4 +1,12 @@
 services:
+  database:
+    image: postgres:11
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: a_service
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
