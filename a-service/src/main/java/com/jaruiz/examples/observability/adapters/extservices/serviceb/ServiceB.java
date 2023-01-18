@@ -19,8 +19,9 @@ public class ServiceB implements ServiceBPort {
 
     @Override public ProcessData callServiceB(ProcessData processData) {
         final Response response = serviceBClient.updateProcess(bm2DTO(processData));
+        var processDataResponse = response.readEntity(ProcessDataDTO.class);
 
-        return dto2BM((ProcessDataDTO) response.getEntity());
+        return dto2BM(processDataResponse);
     }
 
     private ProcessDataDTO bm2DTO(ProcessData processData) {
