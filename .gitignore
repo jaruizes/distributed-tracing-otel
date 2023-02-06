@@ -40,3 +40,5 @@ $RECYCLE.BIN/
 #Confluent cluster info
 /cloud/scenarios/retail/7.replicator/cluster_api_key.json
 /cloud/scenarios/retail/7.replicator/cluster_info.json
+/service-a/build/
+/observability-project.iml

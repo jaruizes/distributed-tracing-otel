@@ -41,4 +41,8 @@ public class ProcessDataDTO implements Serializable {
     public void setCurrentValue(Integer currentValue) {
         this.currentValue = currentValue;
     }
+
+    @Override public String toString() {
+        return "ProcessDataDTO{" + "id=" + id + ", initialValue=" + initialValue + ", currentValue=" + currentValue + '}';
+    }
 }

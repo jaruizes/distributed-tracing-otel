@@ -1,6 +1,6 @@
 services:
   service-a:
-    image: node/service-a
+    image: node/service-a:more-detail
     depends_on:
       service-b:
         condition: service_healthy
@@ -10,13 +10,8 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
     ports:
       - "8080:8080"
-#    logging:
-#      driver: fluentd
-#      options:
-#        fluentd-async-connect: "true"
-#        fluentd-address: "localhost:24224"
   service-b:
-    image: spring/service-b
+    image: spring/service-b:more-detail
     depends_on:
       - otel-collector
       - kafka
@@ -30,16 +25,11 @@ services:
       - "8081:8081"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-#    logging:
-#      driver: fluentd
-#      options:
-#        fluentd-async-connect: "true"
-#        fluentd-address: "localhost:24224"
+      interval: 60s
+      timeout: 20s
+      retries: 5
   service-c:
-    image: quarkus/service-c
+    image: quarkus/service-c:more-detail
     depends_on:
       service-b:
         condition: service_healthy
@@ -47,13 +37,8 @@ services:
       QUARKUS_OPENTELEMETRY_TRACER_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
     ports:
       - "8082:8082"
-#    logging:
-#      driver: fluentd
-#      options:
-#        fluentd-async-connect: "true"
-#        fluentd-address: "localhost:24224"
   service-d:
-    image: quarkus/service-d
+    image: quarkus/service-d:more-detail
     depends_on:
       service-b:
         condition: service_healthy
@@ -62,37 +47,6 @@ services:
       QUARKUS_OPENTELEMETRY_TRACER_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
     ports:
       - "8083:8083"
-#    logging:
-#      driver: fluentd
-#      options:
-#        fluentd-async-connect: "true"
-#        fluentd-address: "localhost:24224"
-#  zookeeper:
-#    image: confluentinc/cp-zookeeper:latest
-#    environment:
-#      ZOOKEEPER_CLIENT_PORT: 2181
-#      ZOOKEEPER_TICK_TIME: 3000
-#    ports:
-#      - 22181:2181
-#    healthcheck:
-#      test: [ "CMD-SHELL", "echo ruok | nc -w 2 zookeeper 2181" ]
-#      interval: 5s
-#      timeout: 10s
-#      retries: 3
-#  kafka:
-#    image: confluentinc/cp-kafka:latest
-#    depends_on:
-#      - zookeeper
-#    ports:
-#      - 29092:29092
-#    environment:
-#      KAFKA_BROKER_ID: 1
-#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-#      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
   zookeeper:
     image: quay.io/strimzi/kafka:0.33.0-kafka-3.3.2
     command: [
@@ -104,7 +58,6 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       LOG_DIR: /tmp/logs
-
   kafka:
     image: quay.io/strimzi/kafka:0.33.0-kafka-3.3.2
     command: [
@@ -120,20 +73,6 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    hostname: kafka-ui
-    container_name: kafka-ui
-    ports:
-      - "9081:9081"
-    depends_on:
-      - kafka
-    environment:
-      SERVER_PORT: 9081
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-      KAFKA_CLUSTERS_0_NAME: local
   otel-collector:
     image: otel/opentelemetry-collector:latest
     command: [ "--config=/etc/otel-collector-config.yaml" ]
@@ -151,34 +90,3 @@ services:
       - "16686:16686"
       - "14268:14268"
       - "14250:14250"
-#  grafana:
-#    image: grafana/grafana:9.1.2
-#    container_name: grafana
-#    depends_on:
-#      - loki
-#    ports:
-#      - "3000:3000"
-#    environment:
-#      - GF_SECURITY_ADMIN_USER=user
-#      - GF_SECURITY_ADMIN_PASSWORD=password
-#    volumes:
-#      - ./resources/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
-##      - ./resources/grafana/dashboards:/etc/grafana/provisioning/dashboards
-#      - ./resources/grafana/grafana.ini:/etc/grafana/grafana.ini
-#  loki:
-#    image: grafana/loki:2.6.1
-#    container_name: loki
-#    depends_on:
-#      - fluent-bit
-#    ports:
-#      - "3100:3100"
-#  fluent-bit:
-#    image: grafana/fluent-bit-plugin-loki:2.6.1-amd64
-#    container_name: fluent-bit
-#    ports:
-#      - "24224:24224"
-#    environment:
-#      - LOKI_URL=http://loki:3100/loki/api/v1/push
-#    volumes:
-#      - ./resources/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
-

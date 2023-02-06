@@ -5,6 +5,8 @@ import java.net.URI;
 import com.jaruiz.examples.observability.bservicespring.api.rest.dto.ProcessDataDTO;
 import com.jaruiz.examples.observability.bservicespring.business.model.ProcessData;
 import com.jaruiz.examples.observability.bservicespring.business.ports.BServiceBusinessPort;
+import io.opentelemetry.instrumentation.annotations.SpanAttribute;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,9 @@ public class BRestController {
     @Autowired
     BServiceBusinessPort bService;
 
-
+    @WithSpan("API Rest: /b-service (POST)")
     @PostMapping(path = "/b-service", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<ProcessDataDTO> updateProcess(@RequestBody final ProcessDataDTO processDataDTO) {
+    public ResponseEntity<ProcessDataDTO> updateProcess(@SpanAttribute("data") @RequestBody final ProcessDataDTO processDataDTO) {
         final ProcessData processData = bService.updateProcess(dto2BM(processDataDTO));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                                                   .path("/{id}")

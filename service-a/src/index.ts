@@ -23,14 +23,14 @@ consumer.run({
         tracer.startActiveSpan('Extrayendo info del mensaje', span => {
             span.setAttribute('Mensaje', msg)
 
-            // Be sure to end the span!
             span.end();
         });
+
         console.log({
             value: message.value?.toString(),
         })
     },
-})
+});
 
 const PORT: number = parseInt(process.env.PORT || "8080");
 const index: Express = express();

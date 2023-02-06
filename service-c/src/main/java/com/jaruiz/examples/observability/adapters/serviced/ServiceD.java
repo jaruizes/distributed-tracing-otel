@@ -8,6 +8,7 @@ import com.jaruiz.examples.observability.adapters.serviced.client.ServiceDClient
 import com.jaruiz.examples.observability.adapters.serviced.client.dto.ProcessDataDTO;
 import com.jaruiz.examples.observability.business.model.ProcessData;
 import com.jaruiz.examples.observability.business.ports.ServiceDPort;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
@@ -16,8 +17,9 @@ public class ServiceD implements ServiceDPort {
     @Inject
     @RestClient
     ServiceDClient serviceDClient;
-
-    @Override public ProcessData callServiceB(ProcessData processData) {
+    @WithSpan(value = "RestClient Adapter: POST service D")
+    @Override
+    public ProcessData callServiceD(ProcessData processData) {
         final Response response = serviceDClient.updateProcess(bm2DTO(processData));
         var processDataResponse = response.readEntity(ProcessDataDTO.class);
 

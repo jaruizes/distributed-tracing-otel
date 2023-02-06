@@ -22,4 +22,8 @@ public class ProcessDataMessage {
     public Integer getCurrentValue() {
         return currentValue;
     }
+
+    @Override public String toString() {
+        return "ProcessDataMessage{" + "id=" + id + ", initValue=" + initValue + ", currentValue=" + currentValue + '}';
+    }
 }
