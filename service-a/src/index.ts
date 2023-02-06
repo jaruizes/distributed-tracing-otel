@@ -1,10 +1,6 @@
 import express, { Express } from "express";
 import axios from 'axios';
 import { Kafka, KafkaConfig, Consumer, EachMessagePayload } from 'kafkajs';
-import opentelemetry from "@opentelemetry/api";
-const tracer = opentelemetry.trace.getTracer(
-    'my-service-tracer'
-);
 
 const kafkaBrokers = process.env.KAFKA_BOOTSTRAP_SERVERS || 'localhost:29092';
 const serviceBURL = process.env.SERVICEB_URL || 'http://localhost:8081';
@@ -19,13 +15,6 @@ consumer.connect()
 consumer.subscribe({ topic: 'topic-d', fromBeginning: true })
 consumer.run({
     eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
-        const msg = message.value ? message.value.toString() : '';
-        tracer.startActiveSpan('Extrayendo info del mensaje', span => {
-            span.setAttribute('Mensaje', msg)
-
-            // Be sure to end the span!
-            span.end();
-        });
         console.log({
             value: message.value?.toString(),
         })

@@ -13,6 +13,10 @@ public class BService implements BServiceBusinessPort {
     private PublishService publishService;
 
     public ProcessData updateProcess(ProcessData processData) {
+        if (processData.getCurrentValue() < 0) {
+            throw new RuntimeException("Esto es un fallo deliberado para mostrar el error en las trazas");
+        }
+
         final ProcessData processDataUpdated = new ProcessData(processData.getId(), processData.getInitValue(), processData.getCurrentValue() + 10);
         publishService.publish(processDataUpdated);
 
