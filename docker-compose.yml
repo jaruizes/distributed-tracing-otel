@@ -13,8 +13,8 @@ services:
   service-b:
     image: spring/service-b:more-detail
     depends_on:
-      - otel-collector
-      - kafka
+      kafka:
+        condition: service_healthy
     environment:
       JAVA_TOOL_OPTIONS: "-javaagent:/app/lib/opentelemetry-javaagent-1.22.1.jar"
       OTEL_SERVICE_NAME: "service-b(Spring)"
@@ -25,9 +25,10 @@ services:
       - "8081:8081"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
-      interval: 60s
-      timeout: 20s
-      retries: 5
+      start_period: 60s
+      interval: 10s
+      timeout: 10s
+      retries: 12
   service-c:
     image: quarkus/service-c:more-detail
     depends_on:
@@ -73,6 +74,13 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "topic-b:1:1, topic-d:1:1"
+    healthcheck:
+      test: nc -z localhost 9092 || exit -1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 10
   otel-collector:
     image: otel/opentelemetry-collector:latest
     command: [ "--config=/etc/otel-collector-config.yaml" ]
